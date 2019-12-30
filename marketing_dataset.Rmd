@@ -1,0 +1,125 @@
+---
+title: "Linear regression"
+author: "Sowmiya"
+date: "21/11/2019"
+output:
+  html_document: default
+---
+
+1. Introduction to Linear Regression:
+
+  Linear regression is one of the most commonly used predictive modelling techniques. The aim of linear regression is to find a mathematical equation for a continuous response variable Y as a function of one or more X variable(s). So that you can use this regression model to predict the Y when only the X is known.
+
+This mathematical equation can be generalised as follows:
+
+$$Y = \beta_{1} + \beta_{2} X + \epsilon$$
+where, β1 is the intercept and β2 is the slope.
+
+Collectively, they are called regression coefficients and ϵ is the error term, the part of Y the regression model is unable to explain.
+
+2. Example Problem
+(1)For this analysis, we will use the marketing dataset.
+
+#Description
+A data frame containing the impact of three advertising medias (youtube, facebook and newspaper) on sales. Data are the advertising budget in thousands of dollars along with the sales.
+it consists of 200 observations(rows) and 4 variables (columns).
+
+```{r}
+library(datarium)
+#data("marketing", package = "datarium")
+data("marketing")
+View(marketing)
+```
+
+(2)Lets print out the first six observations here.
+```{r}
+head(marketing)
+```
+
+(3)To check the structure of the data:
+```{r}
+str(marketing)
+```
+
+(4)what is the maximum and minimum of these data values?
+
+```{r}
+summary(marketing)
+```
+
+
+3. Graphical Analysis:
+
+The aim of this exercise is to build a simple regression model that you can use to predict future sales on the basis of advertising budget spent on youtube.
+
+```{r}
+library(ggplot2)
+ggplot(marketing,mapping = aes(youtube,sales))+geom_point()
+```
+
+The scatter plot along with the smoothing line above suggests a linear and positive relationship between the ‘sales’ and ‘youtube’.
+
+4. What is Correlation Analysis?
+Correlation is a statistical measure that shows the degree of linear dependence between two variables.
+
+Correlation can take values between -1 to +1.
+
+If one variables consistently increases with increasing value of the other, then they have a strong positive correlation (value close to +1).
+
+Similarly, if one consistently decreases when the other increase, they have a strong negative correlation (value close to -1).
+
+A value closer to 0 suggests a weak relationship between the variables.
+```{r}
+cor(marketing$sales,marketing$youtube)
+```
+In our example, the correlation coefficient is large enough, so we can continue by building a linear model of y as a function of x.
+
+5. Building the Linear Regression Model:
+
+
+
+ function used for building linear models is lm().
+```{r}
+model <- lm(sales ~ youtube, data = marketing)
+model
+```
+The linear model equation can be written as follow: sales = b0 + b1 * youtube
+
+5.1.Interpretation
+
+From the output above:
+
+the estimated regression line equation can be written as follow: sales = 8.44 + 0.048*youtube
+
+the intercept (b0) is 8.44. It can be interpreted as the predicted sales unit for a zero youtube advertising budget. Recall that, we are operating in units of thousand dollars. This means that, for a youtube advertising budget equal zero, we can expect a sale of 8.44 *1000 = 8440 dollars.
+
+the regression beta coefficient for the variable youtube (b1), also known as the slope, is 0.048. This means that, for a youtube advertising budget equal to 1000 dollars, we can expect an increase of 48 units (0.048*1000) in sales. That is, sales = 8.44 + 0.048*1000 = 56.44 units. As we are operating in units of thousand dollars, this represents a sale of 56440 dollars.
+
+
+5.2.Regression line
+To add the regression line onto the scatter plot, you can use the function stat_smooth() [ggplot2]. 
+```{r}
+ggplot(marketing, aes(youtube, sales)) + geom_point() +   stat_smooth(method = lm)
+```
+5.3 Summary
+
+```{r}
+summary(model)
+```
+Residual standard error (RSE), R-squared (R2) and the F-statistic are metrics that are used to check how well the model fits to our data.
+In our example, both the p-values for the intercept and the predictor variable are highly significant, so we can reject the null hypothesis and accept the alternative hypothesis, which means that there is a significant association between the predictor and the outcome variables.
+
+5.4Summary
+
+After computing a regression model, a first step is to check whether, at least, one predictor is significantly associated with outcome variables.
+
+If one or more predictors are significant, the second step is to assess how well the model fits the data by inspecting the Residuals Standard Error (RSE), the R^2 value and the F-statistics. These metrics give the overall quality of the model.
+```{r}
+model2=lm(sales ~ youtube*facebook, data = marketing)
+summary(model2)
+```
+
+RSE: Closer to zero the better
+R-Squared: Higher the better
+F-statistic: Higher the better
+
